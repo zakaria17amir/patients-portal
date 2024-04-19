@@ -52,7 +52,7 @@ source venv/bin/activate
 
 *In windows*
 ```bash
-source venv/Scripts/activate
+.\\venv\Scripts\activate.bat
 ```
 
 6. **Install python packages to run the application**
