@@ -80,6 +80,7 @@ Here is the breakdown:
 - (`requirements.txt`) contains the packages needs to be installed for the application to run. you can append a 3pp (3rd Party Package) in this file if you have used any.
 
 ## Testing the final application
+You can use the git bash to execute these shell commands if you don't have the linux or wsl.
 
 In Terminal :
 
