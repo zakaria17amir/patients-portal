@@ -49,17 +49,31 @@ class PatientAPIController:
     
 
     def get_patients(self):
-        patients = self.patient_db.select_all_patients()
-        if patients is None:
-            return jsonify({"error" : "Failed to retrieve patients "}),400
-        return jsonify(patients), 200
+
+        search_name = request.args.get("search_name")
+        if search_name == None:
+            patients = self.patient_db.select_all_patients()
+            if not patients:
+                return jsonify({"error" : "Database is empty "}), 200
+            return jsonify(patients), 200
+        
+        else:
+            patient_ids = self.patient_db.fetch_patient_id_by_name(search_name)
+            if not patient_ids:
+                return jsonify({"message" : "No patients with that name"}), 200
+            
+            patients = []
+            for patient_id in patient_ids:
+                patient = self.patient_db.select_patient(patient_id["patient_id"])
+                patients.append(patient)
+            return jsonify(patient), 200
 
     def get_patient(self, patient_id):
         patient = self.patient_db.select_patient(patient_id)
         if patient is None:
             return jsonify({"error" : "Patient not found"}), 400
         return jsonify(patient), 200
-
+       
     def update_patient(self, patient_id):
         data = request.json
         if not data:
