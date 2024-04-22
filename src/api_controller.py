@@ -2,6 +2,8 @@
 
 from flask import Flask
 from patient_db import PatientDB
+from flask import jsonify, request
+from patient import Patient
 
 
 class PatientAPIController:
@@ -33,19 +35,47 @@ class PatientAPIController:
     """
 
     def create_patient(self):
-        pass
+        data = request.json
+        if not data:
+            return jsonify({"error" : "No data provided"}), 400
+        
+        patient_id = self.patient_db.insert_patient(data)
+        if patient_id is None:
+            return jsonify({"error" : "Failed to create patient"}), 400
+        
+        new_patient = self.patient_db.fetch_patient_id_by_name(data["patient_name"])
+
+        return jsonify(new_patient), 200
+    
 
     def get_patients(self):
-        pass
+        patients = self.patient_db.select_all_patients()
+        if patients is None:
+            return jsonify({"error" : "Failed to retrieve patients "}),400
+        return jsonify(patients), 200
 
     def get_patient(self, patient_id):
-        pass
+        patient = self.patient_db.select_patient(patient_id)
+        if patient is None:
+            return jsonify({"error" : "Patient not found"}), 400
+        return jsonify(patient), 200
 
     def update_patient(self, patient_id):
-        pass
+        data = request.json
+        if not data:
+            return jsonify({"error" : "No data provided"}), 400
+
+        affected_rows = self.patient_db.update_patient(patient_id, data)
+        if affected_rows is None:
+            return jsonify({"error" : "Failed to update patient"}), 400
+        return jsonify({"message" : "Patient updated successfully"}), 200
+    
 
     def delete_patient(self, patient_id):
-        pass
+        affected_rows = self.patient_db.delete_patient(patient_id)
+        if affected_rows is None:
+            return jsonify({"error" : "Failed to delete patient"}),400
+        return jsonify({"message" : "Patient deleted successfully"}), 200
 
     def run(self):
         """
